@@ -9,3 +9,6 @@ class UserTable(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'users'
