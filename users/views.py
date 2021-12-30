@@ -1,6 +1,6 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.contrib.auth.hashers import check_password
 from .serializer import UserSerializer
 from .models import UserTable
 
@@ -32,15 +32,17 @@ class UserManagement(APIView):
             return Response(data={'message': 'Something went wrong'}, status=500)
 
 
-
-class AuthenticationManagemet(APIView):
+class AuthenticationManagement(APIView):
     def post(self, request):
         try:
             data = request.data
             username = data.get('username')
-            user = UserTable.objects.filter(username=username)
-            print(user)
-            return Response(data={'message': 'Login Success'}, status=200)
+            user = UserTable.objects.get(username=username)
+            print(user.password)
+            if check_password(data.get('password'), user.password):
+                return Response(data={'message': 'Login Success'}, status=200)
+            else:
+                return Response(data={'message': 'Invalid User'}, status=400)
         except Exception as e:
             print(e)
             return Response(data={'message': 'Something went wrong'}, status=500)
