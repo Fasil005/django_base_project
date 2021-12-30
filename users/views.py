@@ -30,3 +30,17 @@ class UserManagement(APIView):
         except Exception as e:
             print(e)
             return Response(data={'message': 'Something went wrong'}, status=500)
+
+
+
+class AuthenticationManagemet(APIView):
+    def post(self, request):
+        try:
+            data = request.data
+            username = data.get('username')
+            user = UserTable.objects.filter(username=username)
+            print(user)
+            return Response(data={'message': 'Login Success'}, status=200)
+        except Exception as e:
+            print(e)
+            return Response(data={'message': 'Something went wrong'}, status=500)
