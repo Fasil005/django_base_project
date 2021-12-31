@@ -19,7 +19,7 @@ class UserManagement(APIView):
             data = request.data
             serializer = UserSerializer(data=data)
             if serializer.is_valid():
-                serializer.create(data)
+                serializer.save()
                 return Response(data={'message': 'User created successfully'}, status=200)
             errors = ""
             for i in serializer.errors:
