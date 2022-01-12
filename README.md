@@ -1,1 +1,1 @@
-# django_base_project
+# Django Rest Framework Boilerplate
