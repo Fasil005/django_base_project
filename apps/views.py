@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from django.db import Error
+from datetime import datetime
 
 from .models import AdminTable
 from .serializer import AdminSerializer
@@ -9,7 +9,9 @@ from .response import (
     response_internal_server_error,
     response_created,
     response_unprocessable_entity,
-    response_updated
+    response_updated,
+    response_success,
+    response_not_found
 )
 
 
@@ -19,9 +21,6 @@ class AdminManagement(APIView):
             admins = AdminTable.objects.all()
             serializer = AdminSerializer(admins, many=True)
             return response_fetched(data=serializer.data, count=len(serializer.data))
-        except Error as e:
-            print(e)
-            return response_bad_request(errors=str(e))
         except Exception as e:
             print(e)
             return response_internal_server_error(errors=str(e))
@@ -37,9 +36,6 @@ class AdminManagement(APIView):
                 errors += serializer.errors.get(i)[0].replace('This', i)
                 break
             return response_unprocessable_entity(errors=errors)
-        except Error as e:
-            print(e)
-            return response_bad_request(errors=str(e))
         except Exception as e:
             print(e)
             return response_internal_server_error(errors=str(e))
@@ -52,9 +48,9 @@ class SingleAdminManagement(APIView):
             admin = AdminTable.objects.get(pk=pk)
             serializer = AdminSerializer(admin)
             return response_fetched(data=serializer.data)
-        except Error as e:
+        except AdminTable.DoesNotExist as e:
             print(e)
-            return response_bad_request(errors=str(e))
+            return response_not_found(errors=str(e))
         except Exception as e:
             print(e)
             return response_internal_server_error(errors=str(e))
@@ -71,9 +67,9 @@ class SingleAdminManagement(APIView):
                 errors += serializer.errors.get(i)[0].replace('This', i)
                 break
             return response_unprocessable_entity(errors=errors)
-        except Error as e:
+        except AdminTable.DoesNotExist as e:
             print(e)
-            return response_bad_request(errors=str(e))
+            return response_not_found(errors=str(e))
         except Exception as e:
             print(e)
             return response_internal_server_error(errors=str(e))
@@ -91,9 +87,30 @@ class SingleAdminManagement(APIView):
             admin.is_staff = request.data.get('is_staff', admin.is_staff)
             admin.save()
             return response_updated()
-        except Error as e:
+        except AdminTable.DoesNotExist as e:
             print(e)
-            return response_bad_request(errors=str(e))
+            return response_not_found(errors=str(e))
         except Exception as e:
             print(e)
             return response_internal_server_error(errors=str(e))
+
+
+class LoginManagement(APIView):
+    def post(self, request):
+        try:
+            email = request.data.get('email')
+            password = request.data.get('password')
+            admin = AdminTable.objects.get(email=email)
+            if admin.password == password:
+                admin.last_login = datetime.now()
+                admin.save()
+                return response_success(data=admin.id, msg='Login Successfully')
+            return response_not_found(errors='Invalid email or password')
+        except AdminTable.DoesNotExist as e:
+            print(e)
+            return response_not_found(errors=str(e))
+        except Exception as e:
+            print(e)
+            return response_internal_server_error(errors=str(e))
+
+
