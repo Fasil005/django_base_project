@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import datetime
 
 
 class AdminTable(AbstractUser):
@@ -11,6 +12,8 @@ class AdminTable(AbstractUser):
     password = models.CharField(max_length=256)
     status = models.IntegerField()
     last_login = models.DateTimeField(null=True)
+    date_joined = models.DateTimeField(default=datetime.datetime.now())
+    is_active = models.BooleanField(default=True)
     username = None
     first_name = None
     last_name = None
