@@ -12,7 +12,7 @@ class AdminTable(AbstractUser):
     password = models.CharField(max_length=256)
     status = models.IntegerField()
     last_login = models.DateTimeField(null=True)
-    date_joined = models.DateTimeField(default=datetime.datetime.now())
+    date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     username = None
     first_name = None
