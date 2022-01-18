@@ -81,3 +81,21 @@ def response_internal_server_error(data=None, count=None, errors=None, msg='Inte
         'count': count,
         'data': data
     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def response_forbidden(data=None, count=None, errors=None, msg='Forbidden'):
+    return Response(data={
+        'status': msg,
+        'errors': errors,
+        'count': count,
+        'data': data
+    }, status=status.HTTP_403_FORBIDDEN)
+
+
+def response_unauthorized(data=None, count=None, errors=None, msg='Unauthorized'):
+    return Response(data={
+        'status': msg,
+        'errors': errors,
+        'count': count,
+        'data': data
+    }, status=status.HTTP_401_UNAUTHORIZED)
